@@ -8,6 +8,10 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+datasets/
+__pycache__/
+.idea/
+20180408-102900/
 env/
 build/
 develop-eggs/

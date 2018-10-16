@@ -33,6 +33,8 @@ import tensorflow as tf
 #from math import floor
 import cv2
 import os
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 
 def layer(op):
     """Decorator for composable network layers."""
@@ -308,6 +310,8 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
     points=np.empty(0)
     h=img.shape[0]
     w=img.shape[1]
+
+    # 取图片尺寸最小值
     minl=np.amin([h, w])
     m=12.0/minsize
     minl=minl*m
@@ -318,12 +322,17 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
         minl = minl*factor
         factor_count += 1
 
+    plt.imshow(img)
+
     # first stage
     for scale in scales:
         hs=int(np.ceil(h*scale))
         ws=int(np.ceil(w*scale))
         im_data = imresample(img, (hs, ws))
         im_data = (im_data-127.5)*0.0078125
+
+        plt.imshow(im_data)
+
         img_x = np.expand_dims(im_data, 0)
         img_y = np.transpose(img_x, (0,2,1,3))
         out = pnet(img_y)
@@ -335,6 +344,18 @@ def detect_face(img, minsize, pnet, rnet, onet, threshold, factor):
         # inter-scale nms
         pick = nms(boxes.copy(), 0.5, 'Union')
         if boxes.size>0 and pick.size>0:
+
+            # x1 = boxes[:, 0]
+            # y1 = boxes[:, 1]
+            # x2 = boxes[:, 2]
+            # y2 = boxes[:, 3]
+            # for i in range(len(x1)):
+            #     yb1 = y1[i]
+            #     yb2 = y2[i]
+            #     currentAxis = plt.gca()
+            #     rect = patches.Rectangle((yb1, yb2), abs(x2[i]-x1[i]), abs(y2[i]-y1[i]), linewidth=1, edgecolor='r', facecolor='none')
+            #     currentAxis.add_patch(rect)
+
             boxes = boxes[pick,:]
             total_boxes = np.append(total_boxes, boxes, axis=0)
 

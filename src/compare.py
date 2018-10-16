@@ -35,10 +35,14 @@ import copy
 import argparse
 import facenet
 import align.detect_face
+import matplotlib.pyplot as plt
 
 def main(args):
 
     images = load_and_align_data(args.image_files, args.image_size, args.margin, args.gpu_memory_fraction)
+
+    plt.imshow(images[0])
+    plt.show()
     with tf.Graph().as_default():
 
         with tf.Session() as sess:
@@ -95,6 +99,8 @@ def load_and_align_data(image_paths, image_size, margin, gpu_memory_fraction):
         img = misc.imread(os.path.expanduser(image), mode='RGB')
         img_size = np.asarray(img.shape)[0:2]
         bounding_boxes, _ = align.detect_face.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
+        print(_)
+        print('--------')
         if len(bounding_boxes) < 1:
           image_paths.remove(image)
           print("can't detect face, remove ", image)
